@@ -5,27 +5,79 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
     private static Context mContext;
+
+    final int numOfTiles=5;
+
+    private View[] coloredTiles = new View[numOfTiles];
+    private int[] tileColors = new int[numOfTiles];
     public static final String TAG = "Mondrian";
 
     private static InfoDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SeekBar changeColorSlider;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mContext = getApplicationContext();
         mDialog = new InfoDialog();
+
+        // assemble references to each tile
+        // place the white tile in the first position
+        coloredTiles[0] = findViewById(R.id.myRectangleView12);
+        coloredTiles[1] = findViewById(R.id.myRectangleView11);
+        coloredTiles[2] = findViewById(R.id.myRectangleView13);
+        coloredTiles[3] = findViewById(R.id.myRectangleView21);
+        coloredTiles[4] = findViewById(R.id.myRectangleView22);
+
+        tileColors[0] = getResources().getColor(R.color.white);
+        tileColors[1] = getResources().getColor(R.color.darkred);
+        tileColors[2] = getResources().getColor(R.color.darkblue);
+        tileColors[3] = getResources().getColor(R.color.dullblue);
+        tileColors[4] = getResources().getColor(R.color.fuschia);
+
+//        set the background colors (yes, this is redundant with the
+//        resource file but this is how I really want them
+        for (int i=0;i<numOfTiles;i++) {
+            coloredTiles[i].setBackgroundColor(tileColors[i]);
+        }
+
+        // set up the seek bar
+        changeColorSlider = (SeekBar) findViewById(R.id.colorSlider);
+        changeColorSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                updateTileColors(coloredTiles, progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
 
@@ -53,5 +105,43 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
+    }
+
+    // change the color of each tile except for the white one
+    // at array pos 0
+
+    void updateTileColors(View[] tiles, int val) {
+        float hsv[] = new float[3];
+        int rgba[] = new int[4];
+
+
+        // use the slider to scale the hue and saturation
+        // of each tile
+        for (int i=1;i<numOfTiles;i++) {
+            int2rgba(tileColors[i],rgba);   // decompose into rgb, alpha
+            Color.RGBToHSV(rgba[0],rgba[1],rgba[2],hsv);    // convert to HSV
+
+            // rotate hue through 180 degrees (max of slider)
+            hsv[0] = (hsv[0] + val) % 360.0f;
+
+            // reduce the saturation by 50% (max of slider)
+            hsv[1] = hsv[1] * (1.0f-(0.5f*val/180.0f));
+
+            // convert back to a color-int
+            int newColor = Color.HSVToColor(rgba[3],hsv);
+
+            tiles[i].setBackgroundColor(newColor);
+        }
+    }
+
+    // why this isn't built-in is a mystery to me
+    void int2rgba(int c, int rgba[]) {
+
+        rgba[0] = Color.red(c);
+        rgba[1] = Color.green(c);
+        rgba[2] = Color.blue(c);
+        rgba[3] = Color.alpha(c);
+
+        return;
     }
 }

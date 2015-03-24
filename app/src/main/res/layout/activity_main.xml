@@ -11,7 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentEnd="false"
-        android:layout_above="@+id/seekBar"
+        android:layout_above="@+id/colorSlider"
         android:baselineAligned="false">
 
         <LinearLayout
@@ -73,10 +73,11 @@
     <SeekBar
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/seekBar"
+        android:id="@+id/colorSlider"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_alignParentEnd="false"
-        android:layout_alignParentStart="false" />
+        android:layout_alignParentStart="false"
+        android:max="180" />
 
 </RelativeLayout>
