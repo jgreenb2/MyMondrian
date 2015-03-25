@@ -22,11 +22,16 @@ import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
     private static Context mContext;
+    private static int mSliderMax;
 
     final int numOfTiles=5;
 
     private View[] coloredTiles = new View[numOfTiles];
     private int[] tileColors = new int[numOfTiles];
+    
+    // velocity of the white tile is 0.0 so it never changes
+    private float[] colorVelocity = {1.0f, 2.0f, 1.5f, 3.0f, 0.0f, .5f};
+
     public static final String TAG = "Mondrian";
 
     private static InfoDialog mDialog;
@@ -43,20 +48,22 @@ public class MainActivity extends ActionBarActivity {
 
         // assemble references to each tile
         // place the white tile in the first position
-        coloredTiles[0] = findViewById(R.id.myRectangleView12);
-        coloredTiles[1] = findViewById(R.id.myRectangleView11);
+        coloredTiles[0] = findViewById(R.id.myRectangleView11);
+        coloredTiles[1] = findViewById(R.id.myRectangleView12);
         coloredTiles[2] = findViewById(R.id.myRectangleView13);
         coloredTiles[3] = findViewById(R.id.myRectangleView21);
         coloredTiles[4] = findViewById(R.id.myRectangleView22);
 
         // retrieve the initial view colors
-        for (int i=1;i<numOfTiles;i++) {
+        for (int i=0;i<numOfTiles;i++) {
             ColorDrawable drawable = (ColorDrawable) coloredTiles[i].getBackground();
             tileColors[i] = drawable.getColor();
         }
 
         // set up the seek bar
         changeColorSlider = (SeekBar) findViewById(R.id.colorSlider);
+        mSliderMax = changeColorSlider.getMax();
+
         changeColorSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -112,15 +119,15 @@ public class MainActivity extends ActionBarActivity {
 
         // use the slider to scale the hue and saturation
         // of each tile
-        for (int i=1;i<numOfTiles;i++) {
+        for (int i=0;i<numOfTiles;i++) {
             int2rgba(tileColors[i],rgba);   // decompose into rgb, alpha
             Color.RGBToHSV(rgba[0],rgba[1],rgba[2],hsv);    // convert to HSV
 
             // rotate hue through 180 degrees (max of slider)
-            hsv[0] = (hsv[0] + val) % 360.0f;
+            hsv[0] = (hsv[0] + val*colorVelocity[i]) % 360.0f;
 
             // reduce the saturation by 50% (max of slider)
-            hsv[1] = hsv[1] * (1.0f-(0.5f*val/180.0f));
+            hsv[1] = hsv[1] * (1.0f-(0.5f*val*colorVelocity[i]/((float) mSliderMax)));
 
             // convert back to a color-int
             int newColor = Color.HSVToColor(rgba[3],hsv);
