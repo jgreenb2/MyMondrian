@@ -28,9 +28,9 @@ public class MainActivity extends ActionBarActivity {
 
     private View[] coloredTiles = new View[numOfTiles];
     private int[] tileColors = new int[numOfTiles];
-    
+
     // velocity of the white tile is 0.0 so it never changes
-    private float[] colorVelocity = {1.0f, 2.0f, 1.5f, 3.0f, 0.0f, .5f};
+    private float[] colorVelocity = {1.0f, 2.0f, 1.5f, 0.0f, 3.0f};
 
     public static final String TAG = "Mondrian";
 
@@ -126,8 +126,8 @@ public class MainActivity extends ActionBarActivity {
             // rotate hue through 180 degrees (max of slider)
             hsv[0] = (hsv[0] + val*colorVelocity[i]) % 360.0f;
 
-            // reduce the saturation by 50% (max of slider)
-            hsv[1] = hsv[1] * (1.0f-(0.5f*val*colorVelocity[i]/((float) mSliderMax)));
+            // reduce the saturation by 25% (max of slider)
+            hsv[1] = hsv[1] * (1.0f-(0.25f*val*colorVelocity[i]/((float) mSliderMax)));
 
             // convert back to a color-int
             int newColor = Color.HSVToColor(rgba[3],hsv);
