@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -30,7 +31,8 @@ public class MainActivity extends ActionBarActivity {
     private int[] tileColors = new int[numOfTiles];
 
     // velocity of the white tile is 0.0 so it never changes
-    private float[] colorVelocity = {1.0f, 2.0f, 1.5f, 0.0f, 3.0f};
+    //private float[] colorVelocity = {1.0f, 2.0f, 1.5f, 0.0f, 3.0f};
+    private float colorVelocity[] = new float[numOfTiles];
 
     public static final String TAG = "Mondrian";
 
@@ -39,6 +41,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SeekBar changeColorSlider;
+        Random rnd = new Random();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -55,9 +58,12 @@ public class MainActivity extends ActionBarActivity {
         coloredTiles[4] = findViewById(R.id.myRectangleView22);
 
         // retrieve the initial view colors
+        // and initialize the colorVelocities to random values
+        // in the interval [0.5, 3)
         for (int i=0;i<numOfTiles;i++) {
             ColorDrawable drawable = (ColorDrawable) coloredTiles[i].getBackground();
             tileColors[i] = drawable.getColor();
+            colorVelocity[i] = (rnd.nextFloat()*2.5f)+0.5f;
         }
 
         // set up the seek bar
@@ -123,7 +129,7 @@ public class MainActivity extends ActionBarActivity {
             int2rgba(tileColors[i],rgba);   // decompose into rgb, alpha
             Color.RGBToHSV(rgba[0],rgba[1],rgba[2],hsv);    // convert to HSV
 
-            // rotate hue through 180 degrees (max of slider)
+            // rotate hue through max of slider degrees
             hsv[0] = (hsv[0] + val*colorVelocity[i]) % 360.0f;
 
             // reduce the saturation by 25% (max of slider)
