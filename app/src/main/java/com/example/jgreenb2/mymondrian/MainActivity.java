@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,16 +49,10 @@ public class MainActivity extends ActionBarActivity {
         coloredTiles[3] = findViewById(R.id.myRectangleView21);
         coloredTiles[4] = findViewById(R.id.myRectangleView22);
 
-        tileColors[0] = getResources().getColor(R.color.white);
-        tileColors[1] = getResources().getColor(R.color.darkred);
-        tileColors[2] = getResources().getColor(R.color.darkblue);
-        tileColors[3] = getResources().getColor(R.color.dullblue);
-        tileColors[4] = getResources().getColor(R.color.fuschia);
-
-//        set the background colors (yes, this is redundant with the
-//        resource file but this is how I really want them
-        for (int i=0;i<numOfTiles;i++) {
-            coloredTiles[i].setBackgroundColor(tileColors[i]);
+        // retrieve the initial view colors
+        for (int i=1;i<numOfTiles;i++) {
+            ColorDrawable drawable = (ColorDrawable) coloredTiles[i].getBackground();
+            tileColors[i] = drawable.getColor();
         }
 
         // set up the seek bar
